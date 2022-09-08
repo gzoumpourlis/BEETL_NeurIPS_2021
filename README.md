@@ -91,6 +91,10 @@ checkpoints (note: contains the saved model checkpoints, stored as .pth files)
 preds       (note: contains the predictions on a dataset, as a .txt file and as a .npy file)
 ```
 
+<p>
+  <img src="https://raw.githubusercontent.com/gzoumpourlis/BEETL_NeurIPS_2021/main/figures/stage_1.png" width="600" title="Overview of the 1st stage of training">
+</p>
+
 ## Finetuning (2nd stage)
 
 To finetune a model, you need to use `src/run_exp_finetune.py`, running the following command:
@@ -115,6 +119,10 @@ AdamW is selected as the optimizer (weight decay=`5e-4`), using its [PyTorch imp
 For this 2nd stage, we use dropout with probability equal to `0.3` in EEGNet. We freeze the parameters of the first convolutional layer (temporal convolution) of EEGNet. We also insert an L2 normalization layer, between the last convolution layer and the MLP classifier of EEGNet during the 2nd stage.
 
 The BeetlMI training (labelled) set is used as the **validation set** of this stage. We can do that, as the labels of BeetlMI's training set have not been used yet. We get an idea of how our model generalizes on BeetlMI, which is somehow similar to Cybathlon. We performed a visual inspection of the Riemannian distances between the covariance matrices for all the participants of BeetlMI and Cybathlon, labelled and unlabelled sets. The distance matrix can be found in image format, at the file `plots/cov_distances_BeetlMI_Cybathlon.png`. We decided to discard participant #2 from the BeetlMI training set, when using it for validation purposes to assume the generalization on Cybathlon, as it seemed to have the most dissimilar statistics. The accuracy on this validation set is used to determine the best model, and save its weights in a **checkpoint**. This checkpoint is used to obtain the predictions on Cybathlon test (unlabelled) set. Please note that to conform with the target classes as needed to evaluate a submission on the BEETL competition (i.e., merging the classes "_feet_" and "_rest_" into one class named "_other_"), we replace every predicted label of class ID `3` (i.e. 4th class using zero-indexing), to class ID `2`: _other_ (`0`: _left_hand_, `1`: _right_hand_).
+
+<p>
+  <img src="https://raw.githubusercontent.com/gzoumpourlis/BEETL_NeurIPS_2021/main/figures/stage_2.png" width="600" title="Overview of the 2nd stage of training">
+</p>
 
 ## Model checkpoints
 
